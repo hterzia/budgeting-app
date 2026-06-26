@@ -89,7 +89,7 @@ export function createAccountsRouter(db: Database): Router {
 
       const updates: any[] = [];
       const values: any[] = [id, DEFAULT_USER_ID];
-      let paramIndex = 3;
+      const paramIndex = 3;
 
       if (name !== undefined) {
         if (!name || typeof name !== 'string' || !name.trim()) {

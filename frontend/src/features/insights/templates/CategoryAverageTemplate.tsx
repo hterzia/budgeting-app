@@ -106,7 +106,7 @@ function textColorFromColor(hex: string): string {
 }
 
 // Helper to get background color class (unused for now, but kept for future extensibility)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function bgColorFromColor(_hex: string): string {
   // This is a simplified version - in production you might want to generate opacity variants
   return "border-gray-100";
