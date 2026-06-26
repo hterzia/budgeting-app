@@ -52,7 +52,7 @@ Feature requests are welcome! Please provide:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/budgeting-app.git
+   git clone https://github.com/hterzia/budgeting-app.git
    cd budgeting-app
    ```
 

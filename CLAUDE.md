@@ -34,8 +34,8 @@ cd backend && npm run dev
   - `ImportCSV` - File upload with template auto-detection
 
 ### Backend (Express + Postgres)
-- **Purpose**: Auto-categorization pipeline using NLP embeddings (vLLM) + KNN
-- **Database**: PostgreSQL with `pgvector` extension (4096-dim embeddings)
+- **Purpose**: Auto-categorization pipeline using in-process NLP embeddings (@huggingface/transformers) + KNN
+- **Database**: PostgreSQL with `pgvector` extension (384-dim embeddings)
 - **Key Tables**:
   - `import_batches` - Tracks async import state
   - `transactions` - Raw import data + category state
@@ -46,7 +46,7 @@ cd backend && npm run dev
 ### Categorization Pipeline (Backend)
 1. CSV upload creates `import_batches` record
 2. Parse CSV → insert `transactions` with `text_for_embedding`
-3. Generate embeddings via vLLM API → store in `transaction_embeddings`
+3. Generate embeddings in-process (all-MiniLM-L6-v2) → store in `transaction_embeddings`
 4. Apply `category_rules` (exact/contains/regex matches)
 5. KNN query on trusted `transaction_labels` with cosine similarity
 6. Unassigned transactions flagged as `needs_review=true`
@@ -61,7 +61,7 @@ When user edits category:
 ## Tech Stack
 
 **Frontend**: React 18, Vite, Recharts, Tailwind CSS, Vitest
-**Backend**: Express, PostgreSQL, pgvector, vLLM embeddings
+**Backend**: Express, PostgreSQL, pgvector, local @huggingface/transformers embeddings
 **TypeScript**: Strict mode, ES2020 target, bundler module resolution
 
 ## Important File Paths
