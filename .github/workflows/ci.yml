@@ -24,11 +24,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      # Rebuild the one native dependency the backend tests use (SQLite), for
-      # the Node ABI. Tests run fully on SQLite + a local embedding model, so no
-      # external database service is required.
+      # Rebuild the native deps the backend tests use, for the Node ABI:
+      # better-sqlite3 (SQLite store) and onnxruntime-node (local embedding
+      # model). Tests run fully on SQLite + a local model, so no external
+      # database service is required.
       - name: Build native modules
-        run: npm rebuild better-sqlite3
+        run: npm rebuild better-sqlite3 onnxruntime-node
 
       - name: Type check
         run: npm run type-check
