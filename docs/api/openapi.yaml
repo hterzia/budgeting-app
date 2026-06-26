@@ -1,0 +1,796 @@
+openapi: 3.0.0
+info:
+  title: Budgeting App API
+  version: 1.0.0
+  description: API for managing personal finances with AI-powered transaction categorization
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+
+components:
+  securitySchemes:
+    UserAuth:
+      type: apiKey
+      in: header
+      name: X-User-ID
+      description: User ID for authentication
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-03-11T12:00:00.000Z"
+
+    ImportCreateRequest:
+      type: object
+      required:
+        - file
+        - userId
+      properties:
+        file:
+          type: string
+          description: CSV content as string
+          example: "Transaction Date,Description,Amount\n01/15/2026,Starbucks,5.50"
+        userId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        accountId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        invertAmountSign:
+          type: boolean
+          example: false
+
+    ImportCreateResponse:
+      type: object
+      properties:
+        importId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        status:
+          type: string
+          enum: [uploaded]
+          example: "uploaded"
+        totalRows:
+          type: integer
+          example: 100
+        template:
+          type: string
+          example: "Chase Credit Card"
+
+    ImportStatusResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [uploaded, parsing, embedding, categorizing, completed, failed]
+        totalRows:
+          type: integer
+        embeddedRows:
+          type: integer
+        autoCategorizedRows:
+          type: integer
+        needsReviewRows:
+          type: integer
+        errorMessage:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    ProcessResult:
+      type: object
+      properties:
+        total:
+          type: integer
+        ruleMatched:
+          type: integer
+        knnMatched:
+          type: integer
+        llmMatched:
+          type: integer
+        needsReview:
+          type: integer
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        merchant:
+          type: string
+        amount:
+          type: number
+        type:
+          type: string
+          enum: [income, expense, transfer, refund, ignored]
+        categoryId:
+          type: string
+        accountId:
+          type: string
+        importedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        isIgnored:
+          type: boolean
+
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [checking, savings, credit_card]
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense, transfer]
+        color:
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+        icon:
+          type: string
+
+    CategoryCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - color
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense, transfer]
+        color:
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+        icon:
+          type: string
+
+    CategoryUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense, transfer]
+        color:
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+        icon:
+          type: string
+
+    TransactionCategoryUpdate:
+      type: object
+      required:
+        - categoryId
+      properties:
+        categoryId:
+          type: string
+        applyToMerchant:
+          type: boolean
+          example: true
+        applyToPast:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+security:
+  - UserAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - system
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /imports:
+    post:
+      summary: Upload CSV file and start import
+      operationId: createImport
+      tags:
+        - imports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportCreateRequest'
+      responses:
+        '202':
+          description: Import accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportCreateResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: List all import batches for current user
+      operationId: listImports
+      tags:
+        - imports
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of import batches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ImportStatusResponse'
+                  totalCount:
+                    type: integer
+
+  /imports/{id}:
+    get:
+      summary: Get import batch status
+      operationId: getImportStatus
+      tags:
+        - imports
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Import batch status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportStatusResponse'
+        '404':
+          description: Import batch not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete an import batch
+      operationId: deleteImport
+      tags:
+        - imports
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Import deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "deleted"
+                  importId:
+                    type: string
+                    format: uuid
+        '404':
+          description: Import batch not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /imports/{id}/process:
+    post:
+      summary: Trigger embedding and categorization for import
+      operationId: processImport
+      tags:
+        - imports
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Processing completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "completed"
+                  result:
+                    $ref: '#/components/schemas/ProcessResult'
+        '400':
+          description: Batch already processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Import batch not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /imports/{id}/review-queue:
+    get:
+      summary: Get review queue for import
+      operationId: getReviewQueue
+      tags:
+        - imports
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Review queue
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        merchant_clean:
+                          type: string
+                        amount_cents:
+                          type: integer
+                        posted_at:
+                          type: string
+                          format: date
+                        category_source:
+                          type: string
+                        category_confidence:
+                          type: number
+                        category_id:
+                          type: string
+                  totalCount:
+                    type: integer
+
+  /imports/{id}/transactions:
+    get:
+      summary: Get transactions for import
+      operationId: getImportTransactions
+      tags:
+        - imports
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  totalCount:
+                    type: integer
+
+  /transactions:
+    get:
+      summary: Get all transactions
+      operationId: getTransactions
+      tags:
+        - transactions
+      parameters:
+        - name: all
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+  /transactions/{id}/toggle-ignore:
+    post:
+      summary: Toggle transaction ignore status
+      operationId: toggleTransactionIgnore
+      tags:
+        - transactions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction toggle status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  isIgnored:
+                    type: boolean
+
+  /transactions/{id}/category:
+    post:
+      summary: Update transaction category
+      operationId: updateTransactionCategory
+      tags:
+        - transactions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCategoryUpdate'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  transactionId:
+                    type: string
+                  categoryId:
+                    type: string
+                  ruleApplied:
+                    type: boolean
+        '400':
+          description: Invalid category or type mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /accounts:
+    get:
+      summary: Get all accounts
+      operationId: getAccounts
+      tags:
+        - accounts
+      responses:
+        '200':
+          description: List of accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+
+    post:
+      summary: Create new account
+      operationId: createAccount
+      tags:
+        - accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [checking, savings, credit_card]
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /accounts/{id}:
+    put:
+      summary: Update account
+      operationId: updateAccount
+      tags:
+        - accounts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [checking, savings, credit_card]
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete account
+      operationId: deleteAccount
+      tags:
+        - accounts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Account deleted
+
+  /categories:
+    get:
+      summary: Get all categories
+      operationId: getCategories
+      tags:
+        - categories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+    post:
+      summary: Create new category
+      operationId: createCategory
+      tags:
+        - categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreateRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Category already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /categories/{id}:
+    put:
+      summary: Update category
+      operationId: updateCategory
+      tags:
+        - categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdateRequest'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete category
+      operationId: deleteCategory
+      tags:
+        - categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Category deleted

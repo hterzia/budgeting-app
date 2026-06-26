@@ -1,0 +1,226 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e7]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - link "Budgeting App" [ref=e11] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e12]:
+            - link "Overview" [ref=e13] [cursor=pointer]:
+              - /url: /
+            - link "Insights" [ref=e14] [cursor=pointer]:
+              - /url: /insights
+        - button "Import" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+          - text: Import
+    - main [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - heading "Insights" [level=1] [ref=e25]
+            - paragraph [ref=e26]: Customize your financial dashboard with widgets
+          - button "Add Widget" [ref=e27] [cursor=pointer]:
+            - img [ref=e28]
+            - text: Add Widget
+        - generic [ref=e31]:
+          - generic [ref=e33]:
+            - generic [ref=e35]:
+              - generic [ref=e36]:
+                - heading "Summary" [level=3] [ref=e37]
+                - paragraph [ref=e38]: Income, expenses, and savings at a glance
+              - generic [ref=e39]:
+                - button "Filters" [ref=e40] [cursor=pointer]:
+                  - img [ref=e41]
+                  - text: Filters
+                - button "Configure widget" [ref=e43] [cursor=pointer]:
+                  - img [ref=e44]
+                - button "Remove widget" [ref=e46] [cursor=pointer]:
+                  - img [ref=e47]
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - paragraph [ref=e53]: Total Income
+                - paragraph [ref=e54]: $6,119.00
+              - generic [ref=e55]:
+                - paragraph [ref=e56]: Total Expenses
+                - paragraph [ref=e57]: $5,071.43
+              - generic [ref=e58]:
+                - paragraph [ref=e59]: Refunds
+                - paragraph [ref=e60]: $0.00
+              - generic [ref=e61]:
+                - paragraph [ref=e62]: Net Savings
+                - paragraph [ref=e63]: $1,047.57
+              - generic [ref=e64]:
+                - paragraph [ref=e65]: Savings Rate
+                - paragraph [ref=e66]: 17.1%
+          - generic [ref=e68]:
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - heading "Cash Flow" [level=3] [ref=e72]
+                - paragraph [ref=e73]: Running balance over time
+              - generic [ref=e74]:
+                - button "Filters" [ref=e75] [cursor=pointer]:
+                  - img [ref=e76]
+                  - text: Filters
+                - button "Configure widget" [ref=e78] [cursor=pointer]:
+                  - img [ref=e79]
+                - button "Remove widget" [ref=e81] [cursor=pointer]:
+                  - img [ref=e82]
+            - generic [ref=e87]:
+              - img [ref=e88]:
+                - generic [ref=e93]:
+                  - generic [ref=e95]: Feb 7
+                  - generic [ref=e97]: Feb 12
+                  - generic [ref=e99]: Feb 17
+                  - generic [ref=e101]: Feb 22
+                  - generic [ref=e103]: Feb 27
+                  - generic [ref=e105]: Mar 4
+                  - generic [ref=e107]: Mar 9
+                - generic [ref=e109]:
+                  - generic [ref=e111]: "-$3,500.00"
+                  - generic [ref=e113]: $0.00
+                  - generic [ref=e115]: $3,500.00
+                  - generic [ref=e117]: $7,000.00
+                  - generic [ref=e119]: $10,500.00
+              - list [ref=e223]:
+                - listitem [ref=e224]:
+                  - img [ref=e225]
+                  - text: Income
+                - listitem [ref=e227]:
+                  - img [ref=e228]
+                  - text: Expenses
+                - listitem [ref=e230]:
+                  - img [ref=e231]
+                  - text: Balance
+          - generic [ref=e234]:
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - heading "Spending by Category (Bar)" [level=3] [ref=e238]
+                - paragraph [ref=e239]: Category spending as a horizontal bar chart
+              - generic [ref=e240]:
+                - button "Filters" [ref=e241] [cursor=pointer]:
+                  - img [ref=e242]
+                  - text: Filters
+                - button "Configure widget" [ref=e244] [cursor=pointer]:
+                  - img [ref=e245]
+                - button "Remove widget" [ref=e247] [cursor=pointer]:
+                  - img [ref=e248]
+            - generic [ref=e253]:
+              - img [ref=e254]:
+                - generic [ref=e259]:
+                  - generic [ref=e261]: $2,500.00
+                  - generic [ref=e263]: $8,038.80
+                - generic [ref=e265]:
+                  - generic [ref=e267]: Tax Refund
+                  - generic [ref=e269]: Rent Payment
+                  - generic [ref=e271]: Phone
+                  - generic [ref=e273]: Groceries
+                  - generic [ref=e275]: Subscriptions
+              - list [ref=e308]:
+                - listitem [ref=e309]:
+                  - img [ref=e310]
+                  - text: Amount
+          - generic [ref=e313]:
+            - generic [ref=e315]:
+              - generic [ref=e316]:
+                - heading "Emergency Runway" [level=3] [ref=e317]
+                - paragraph [ref=e318]: Months of expenses covered by savings
+              - generic [ref=e319]:
+                - button "Filters" [ref=e320] [cursor=pointer]:
+                  - img [ref=e321]
+                  - text: Filters
+                - button "Configure widget" [ref=e323] [cursor=pointer]:
+                  - img [ref=e324]
+                - button "Remove widget" [ref=e326] [cursor=pointer]:
+                  - img [ref=e327]
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - paragraph [ref=e333]: Current Balance
+                - paragraph [ref=e334]: $1,047.57
+              - generic [ref=e335]:
+                - paragraph [ref=e336]: Monthly Essentials
+                - paragraph [ref=e337]: $0.00
+              - generic [ref=e338]:
+                - paragraph [ref=e339]: Runway (Months)
+                - paragraph [ref=e340]: $0.00
+              - generic [ref=e341]:
+                - paragraph [ref=e342]: Target (Months)
+                - paragraph [ref=e343]: $3.00
+          - generic [ref=e494]:
+            - generic [ref=e496]:
+              - generic [ref=e497]:
+                - heading "Category Spending by Month" [level=3] [ref=e498]
+                - paragraph [ref=e499]: Horizontal grouped bars of category expenses across months
+              - generic [ref=e500]:
+                - button "Filters" [ref=e501] [cursor=pointer]:
+                  - img [ref=e502]
+                  - text: Filters
+                - button "Configure widget" [ref=e504] [cursor=pointer]:
+                  - img [ref=e505]
+                - button "Remove widget" [ref=e507] [cursor=pointer]:
+                  - img [ref=e508]
+            - generic [ref=e513]:
+              - img [ref=e514]:
+                - generic [ref=e519]:
+                  - generic [ref=e521]: $0.00
+                  - generic [ref=e523]: $2,000.00
+                  - generic [ref=e525]: $4,000.00
+                  - generic [ref=e527]: $6,701.74
+                - generic [ref=e529]:
+                  - generic [ref=e531]: Housing
+                  - generic [ref=e533]: Fees & Services
+                  - generic [ref=e535]: Investment
+                  - generic [ref=e537]: Car Payment
+                  - generic [ref=e539]: Transfers
+                  - generic [ref=e541]: Groceries
+                  - generic [ref=e543]: Shopping
+                  - generic [ref=e545]: Fund Account
+                  - generic [ref=e547]: Insurance
+                  - generic [ref=e549]: Utilities
+                  - generic [ref=e551]: Travel
+                  - generic [ref=e553]: ATM Withdrawl
+                  - generic [ref=e555]: Subscriptions
+                  - generic [ref=e557]: Transportation
+                  - generic [ref=e559]: Dining
+                  - generic [ref=e561]: Healthcare
+                  - generic [ref=e563]: Entertainment
+                  - generic [ref=e565]: Delivery
+                  - generic [ref=e567]: Pet Expense
+                  - generic [ref=e569]: Phone
+                  - generic [ref=e571]: Personal Care
+                  - generic [ref=e573]: House Expense
+                  - generic [ref=e575]: Uncategorized
+                  - generic [ref=e577]: Education
+              - list [ref=e856]:
+                - listitem [ref=e857]:
+                  - img [ref=e858]
+                  - text: Sep 2025
+                - listitem [ref=e860]:
+                  - img [ref=e861]
+                  - text: Oct 2025
+                - listitem [ref=e863]:
+                  - img [ref=e864]
+                  - text: Nov 2025
+                - listitem [ref=e866]:
+                  - img [ref=e867]
+                  - text: Dec 2025
+                - listitem [ref=e869]:
+                  - img [ref=e870]
+                  - text: Jan 2026
+                - listitem [ref=e872]:
+                  - img [ref=e873]
+                  - text: Feb 2026
+                - listitem [ref=e875]:
+                  - img [ref=e876]
+                  - text: Mar 2026
+              - generic:
+                - generic:
+                  - paragraph: Groceries
+                  - list:
+                    - listitem: "Sep 2025 : $492.73"
+                    - listitem: "Oct 2025 : $493.65"
+                    - listitem: "Nov 2025 : $577.08"
+                    - listitem: "Dec 2025 : $599.00"
+                    - listitem: "Jan 2026 : $559.83"
+                    - listitem: "Feb 2026 : $534.49"
+                    - listitem: "Mar 2026 : $0.00"
+  - generic [ref=e344]: Investment

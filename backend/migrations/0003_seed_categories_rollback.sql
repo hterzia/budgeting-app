@@ -1,0 +1,3 @@
+-- Rollback for 0003_seed_categories.sql
+-- DELETE statements are idempotent for seed data, no rollback needed
+-- Existing categories will remain but no new inserts will occur on re-run

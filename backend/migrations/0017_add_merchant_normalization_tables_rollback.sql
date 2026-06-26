@@ -1,0 +1,11 @@
+DROP INDEX IF EXISTS merchant_normalization_replacements_unique;
+DROP INDEX IF EXISTS idx_merchant_normalization_replacements_user_enabled_priority;
+DROP TABLE IF EXISTS merchant_normalization_replacements;
+
+DROP INDEX IF EXISTS merchant_noise_tokens_unique;
+DROP INDEX IF EXISTS idx_merchant_noise_tokens_user_enabled_priority;
+DROP TABLE IF EXISTS merchant_noise_tokens;
+
+DROP INDEX IF EXISTS merchant_normalization_rules_unique;
+DROP INDEX IF EXISTS idx_merchant_normalization_rules_user_enabled_priority;
+DROP TABLE IF EXISTS merchant_normalization_rules;

@@ -1,0 +1,71 @@
+appId: com.budgeting.app
+productName: Budget
+directories:
+  output: release
+npmRebuild: true
+
+files:
+  - electron/dist/**/*
+  - electron/package.json
+  - backend/dist/**/*
+  - backend/src/db/schema.sql
+  - backend/package.json
+  - frontend/dist/**/*
+  - package.json
+  # Force-include node_modules since workspace detection fails
+  - node_modules/**/*
+  - backend/node_modules/**/*
+  # Exclude dev/build artifacts and broken symlinks
+  - "!**/node_modules/.cache/**"
+  - "!**/node_modules/.vite/**"
+  - "!**/node_modules/.bin/**"
+  - "!**/.bin/**"
+  - "!**/*.ts"
+  - "!**/*.ts.map"
+  - "!**/*.d.ts.map"
+  - "!**/vitest/**"
+  - "!**/@types/**"
+  - "!**/typescript/**"
+  - "!**/@playwright/**"
+  - "!**/electron/dist/**/*.map"
+  # Trim ONNX Runtime — keep only current platform binaries
+  - "!**/onnxruntime-node/bin/napi-v6/linux/**"
+  - "!**/onnxruntime-node/bin/napi-v6/win32/**"
+  # Trim sharp — keep only current platform
+  - "!**/@img/sharp-linux-*/**"
+  - "!**/@img/sharp-win32-*/**"
+  - "!**/@img/sharp-libvips-linux-*/**"
+  - "!**/@img/sharp-libvips-win32-*/**"
+
+# Native modules must be unpacked from asar
+asarUnpack:
+  - "**/better-sqlite3/**"
+  - "**/onnxruntime-*/**"
+  - "**/sharp/**"
+  - "**/sharp-*/**"
+  - "**/*.node"
+
+# Bundle the embedding model for offline use
+extraResources:
+  - from: models/
+    to: models/
+
+mac:
+  category: public.app-category.finance
+  target:
+    - target: dmg
+      arch:
+        - arm64
+    - target: zip
+      arch:
+        - arm64
+
+win:
+  target:
+    - nsis
+    - portable
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
