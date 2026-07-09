@@ -1,9 +1,13 @@
 import { chromium } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const projectDir = '/path/to/budgeting-app';
-const screenshotDir = path.join(projectDir, 'frontend', 'docs', 'mobile');
+// Resolve paths relative to this script (frontend/tests/e2e/) so the script is
+// portable and doesn't hardcode any machine-specific absolute path.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendDir = path.resolve(__dirname, '..', '..');
+const screenshotDir = path.join(frontendDir, 'docs', 'mobile');
 
 // Ensure directory exists
 if (!fs.existsSync(screenshotDir)) {
